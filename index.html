@@ -20,9 +20,19 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body.locked{overflow:hidden;height:100vh}
 #bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-.glow{position:fixed;width:120vmax;height:120vmax;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 30% 30%,rgba(155,123,255,.18),transparent 45%),radial-gradient(circle at 70% 70%,rgba(255,92,138,.16),transparent 45%);z-index:0;pointer-events:none;animation:drift 18s ease-in-out infinite alternate}
-@keyframes drift{to{transform:translate(-46%,-54%) rotate(20deg)}}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aurora i{position:absolute;width:85vmax;height:85vmax;border-radius:50%;filter:blur(70px);opacity:.55;mix-blend-mode:screen}
+.aurora i:nth-child(1){background:radial-gradient(circle,#ff3d7f 0,transparent 62%);left:-30vmax;top:-25vmax;animation:a1 9s ease-in-out infinite alternate}
+.aurora i:nth-child(2){background:radial-gradient(circle,#7b5cff 0,transparent 62%);right:-35vmax;top:15vh;animation:a2 11s ease-in-out infinite alternate}
+.aurora i:nth-child(3){background:radial-gradient(circle,#ffb347 0,transparent 60%);left:-10vmax;bottom:-45vmax;opacity:.32;animation:a3 13s ease-in-out infinite alternate}
+@keyframes a1{to{transform:translate(30vmax,25vmax) scale(1.25)}}
+@keyframes a2{to{transform:translate(-30vmax,20vmax) scale(.85)}}
+@keyframes a3{to{transform:translate(35vmax,-25vmax) scale(1.2)}}
+.grid{position:fixed;inset:-50%;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:44px 44px;transform:perspective(600px) rotateX(55deg);transform-origin:center 70%;mask-image:radial-gradient(ellipse at center 65%,#000 10%,transparent 60%);-webkit-mask-image:radial-gradient(ellipse at center 65%,#000 10%,transparent 60%);animation:gridmove 2.5s linear infinite}
+@keyframes gridmove{to{background-position:0 44px}}
 main{position:relative;z-index:1}
+section h2,section p.lead,.kicker{text-shadow:0 2px 18px rgba(11,7,22,.9)}
+.player,.song,.quiz,.thm,.stat{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background-color:rgba(20,12,36,.55)}
 section{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px 22px;text-align:center;position:relative}
 .wrap{max-width:560px;width:100%}
 h1,h2{font-family:Fraunces,serif;font-weight:600;line-height:1.1}
@@ -44,7 +54,6 @@ p.lead{font-size:1.08rem;line-height:1.65;color:var(--muted)}
 .lang{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:50;display:flex;background:rgba(20,12,36,.7);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:999px;padding:4px}
 .lang button{border:0;background:none;color:var(--muted);font:600 .78rem 'JetBrains Mono',monospace;padding:7px 11px;border-radius:999px;cursor:pointer}
 .lang button.on{background:var(--pink);color:#fff}
-.mute{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:14px;z-index:50;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(20,12,36,.7);color:#fff;font-size:1.1rem;display:none;cursor:pointer}
 
 /* intro gate */
 #gate{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;transition:opacity 1s,visibility 1s}
@@ -148,6 +157,18 @@ p.lead{font-size:1.08rem;line-height:1.65;color:var(--muted)}
 .dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}
 .dots i.on{background:var(--pink)}
 
+
+/* song */
+.song{background:linear-gradient(160deg,rgba(255,210,122,.12),rgba(255,92,138,.14));border:1px solid var(--line);border-radius:26px;padding:26px 20px;margin-top:10px;position:relative;overflow:hidden}
+.notes{height:90px;position:relative;margin-bottom:8px}
+.notes span{position:absolute;bottom:0;font-size:1.6rem;opacity:0}
+.song.play .notes span{animation:note 1.6s linear infinite}
+@keyframes note{0%{opacity:0;transform:translateY(0) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-90px) rotate(25deg)}}
+.songTitle{font-family:Fraunces,serif;font-style:italic;font-size:1.5rem;margin-bottom:4px}
+.songSub{color:var(--muted);font-size:.85rem;margin-bottom:16px}
+.tease{display:none;margin-top:20px;animation:fade .6s}
+.tease.show{display:block}
+.tease p{color:var(--rose);font-family:Caveat,cursive;font-size:1.7rem;margin-bottom:14px}
 /* final */
 .final h2{font-size:clamp(2.1rem,9vw,3.6rem)}
 .final .big{font-family:Fraunces,serif;font-style:italic;font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:1.3;margin:10px 0 30px}
@@ -169,11 +190,10 @@ footer{position:relative;z-index:1;text-align:center;padding:40px 20px 60px;colo
 </head>
 <body class="locked">
 <canvas id="bg"></canvas>
-<div class="glow"></div>
+<div class="aurora"><i></i><i></i><i></i></div><div class="grid"></div>
 <canvas id="fx"></canvas>
 
 <div class="lang"><button data-l="en" class="on">EN</button><button data-l="fr">FR</button></div>
-<button class="mute" id="mute" aria-label="sound">🔊</button>
 
 <!-- GATE -->
 <div id="gate">
@@ -309,10 +329,34 @@ footer{position:relative;z-index:1;text-align:center;padding:40px 20px 60px;colo
   </div>
 </section>
 
+<!-- SONG -->
+<section id="songSec">
+  <div class="wrap">
+    <div class="kicker reveal">§6</div>
+    <h2 class="reveal" data-i18n="songTitle">I wrote you a song</h2>
+    <p class="lead reveal" data-i18n="songLead">You know I sing. This one exists because of you. Here's a little preview…</p>
+    <div class="song reveal d2" id="songBox">
+      <div class="notes"><span style="left:12%">♪</span><span style="left:32%;animation-delay:.4s">♫</span><span style="left:55%;animation-delay:.8s">♪</span><span style="left:78%;animation-delay:1.2s">♬</span></div>
+      <div class="songTitle">“For Anaïs”</div>
+      <div class="songSub" data-i18n="songSub">by Lewis · 30-second preview</div>
+      <div class="controls">
+        <button class="play-btn" id="songBtn" aria-label="play">▶</button>
+        <div class="bar" id="songBar"><i id="songProg"></i></div>
+        <div class="time" id="songTime">0:00 / 0:30</div>
+      </div>
+      <div class="tease" id="tease">
+        <p data-i18n="tease">Want to hear the whole song? You'll have to ask me 😏</p>
+        <a class="btn wa" id="songWa" target="_blank" rel="noopener"><span>🎶</span><span data-i18n="songAsk">Ask Lewis for the full song</span></a>
+      </div>
+    </div>
+    <audio id="song" src="assets/chanson.m4a" preload="metadata" playsinline></audio>
+  </div>
+</section>
+
 <!-- HUG MODE -->
 <section>
   <div class="wrap hug">
-    <div class="kicker reveal">§6</div>
+    <div class="kicker reveal">§7</div>
     <h2 class="reveal" data-i18n="hugTitle">Our little joke 😏</h2>
     <p class="lead reveal" data-i18n="hugLead">You know what happens when I say "I'm coming to see you"…</p>
     <div style="margin-top:22px" class="reveal d1">
@@ -326,7 +370,7 @@ footer{position:relative;z-index:1;text-align:center;padding:40px 20px 60px;colo
 <!-- QUIZ -->
 <section>
   <div class="wrap">
-    <div class="kicker reveal">§7</div>
+    <div class="kicker reveal">§8</div>
     <h2 class="reveal" data-i18n="quizTitle">A little exam, Miss Mathematician</h2>
     <div class="quiz reveal d1">
       <div class="q" id="qText"></div>
@@ -377,6 +421,7 @@ en:{
  confTitle:"My confession", confLead:"Some things don't fit in text. So I recorded them. Put your headphones on, and press play.",
  letterTitle:"What I really want you to know",
  letter:"I know you're the one, Anaïs. Despite everything you might think.\n\nYou already know I'll never be a source of stress for you. I know a relationship is a responsibility. But you don't have to move at the pace the world imposes on you. Go at your own pace.\n\nJust stay exactly who you are right now, without changing. Because that's how I love you.\n\nThere are so many things we haven't talked about yet… and I want to discover all of them with you.",
+ songTitle:"I wrote you a song", songLead:"You know I sing. This one exists because of you. Here's a little preview…", songSub:"by Lewis · 30-second preview", tease:"Want to hear the whole song? You'll have to ask me 😏", songAsk:"Ask Lewis for the full song", songMsg:"Lewis 🎶 I want to hear the whole song you wrote for me!", songSoon:"The song is coming very soon… 🎶",
  hugTitle:"Our little joke 😏", hugLead:"You know what happens when I say \"I'm coming to see you\"…", hugBtn:"\"I'm coming to see you\" mode", hugOn:"Step 1: a big hug 🤗 … Step 2: the kiss 😘", hugOff:"",
  quizTitle:"A little exam, Miss Mathematician",
  quiz:[
@@ -403,6 +448,7 @@ fr:{
  confTitle:"Ma confession", confLead:"Certaines choses ne tiennent pas dans un texte. Alors je les ai enregistrées. Mets tes écouteurs, et appuie sur play.",
  letterTitle:"Ce que je veux vraiment que tu saches",
  letter:"Je sais que c'est toi la bonne, Anaïs. Malgré tout ce que tu peux penser.\n\nTu sais déjà que je ne serai jamais une source de stress pour toi. Je sais bien qu'une relation, c'est une responsabilité. Mais tu n'as pas besoin d'aller au rythme que le monde t'impose. Va à ton rythme.\n\nReste juste toi, telle que tu es maintenant, sans changer. Parce que c'est comme ça que je t'aime.\n\nIl y a plein de choses dont on n'a pas encore parlé… et j'ai envie de toutes les découvrir avec toi.",
+ songTitle:"Je t'ai écrit une chanson", songLead:"Tu sais que je chante. Celle-ci existe grâce à toi. Voici un petit avant-goût…", songSub:"par Lewis · extrait de 30 secondes", tease:"Tu veux écouter la chanson en entier ? Il faudra me le demander 😏", songAsk:"Demander la chanson à Lewis", songMsg:"Lewis 🎶 je veux écouter la chanson que tu m'as écrite en entier !", songSoon:"La chanson arrive très bientôt… 🎶",
  hugTitle:"Notre petite blague 😏", hugLead:"Tu sais ce qui se passe quand je dis « je viens te voir »…", hugBtn:"Mode « je viens te voir »", hugOn:"Étape 1 : un gros câlin 🤗 … Étape 2 : le bisou 😘", hugOff:"",
  quizTitle:"Petit examen, Mademoiselle la mathématicienne",
  quiz:[
@@ -425,6 +471,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n; if(T[L][k]!==undefined) el.textContent=T[L][k];});
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===L));
   $('#waBtn').href=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(T[L].waMsg)}`;
+  $('#songWa').href=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(T[L].songMsg)}`;
   if(hugOn) $('#hugText').textContent=T[L].hugOn;
   if(letterStarted) { $('#typed').textContent=T[L].letter; $('#typed').classList.add('done'); }
   renderQuiz();
@@ -435,19 +482,21 @@ document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.
 const bg=$('#bg'),bx=bg.getContext('2d');let W,H,DPR=Math.min(2,devicePixelRatio||1);
 const SYM=['∑','∫','π','∞','√','θ','∂','♥','e','i','φ','λ','♡','Δ','≈'];let parts=[];
 function size(){W=innerWidth;H=innerHeight;[bg,$('#fx')].forEach(c=>{c.width=W*DPR;c.height=H*DPR;c.style.width=W+'px';c.style.height=H+'px'});bx.setTransform(DPR,0,0,DPR,0,0);fxx.setTransform(DPR,0,0,DPR,0,0);
-  const n=Math.round(Math.min(46,W*H/14000));parts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,s:10+Math.random()*16,v:.15+Math.random()*.45,a:.05+Math.random()*.16,c:SYM[Math.random()*SYM.length|0],r:Math.random()*6}))}
+  const n=Math.round(Math.min(60,W*H/9000));parts=Array.from({length:n},()=>mk(Math.random()*H))}
+function mk(y){const z=Math.random();return{x:Math.random()*W,y,z,s:14+z*34,v:1.2+z*3.2,a:.1+z*.26,c:SYM[Math.random()*SYM.length|0],r:Math.random()*6,w:.02+Math.random()*.04}}
 const fx=$('#fx'),fxx=fx.getContext('2d');
 let scrollV=0,lastY=scrollY;
 function bgLoop(t){bx.clearRect(0,0,W,H);const sv=Math.max(-3,Math.min(3,(scrollY-lastY)*.05));lastY=scrollY;scrollV+= (sv-scrollV)*.1;
-  for(const p of parts){p.y-=p.v+scrollV;p.r+=.003;if(p.y<-30){p.y=H+30;p.x=Math.random()*W}if(p.y>H+40)p.y=-20;
-    bx.globalAlpha=p.a;bx.fillStyle=p.c==='♥'||p.c==='♡'?'#ff5c8a':'#c9b8ff';bx.font=`${p.s}px JetBrains Mono, monospace`;bx.fillText(p.c,p.x+Math.sin(p.r)*12,p.y)}
+  for(const p of parts){p.y-=p.v+scrollV*(1+p.z*2);p.r+=p.w;if(p.y<-60){Object.assign(p,mk(H+50))}if(p.y>H+80)p.y=-50;
+    const heart=p.c==='♥'||p.c==='♡';bx.globalAlpha=p.a;bx.fillStyle=heart?'#ff5c8a':(p.z>.6?'#ffd27a':'#c9b8ff');bx.shadowColor=heart?'#ff5c8a':'#9b7bff';bx.shadowBlur=p.z>.5?18:0;
+    bx.font=`${p.s}px JetBrains Mono, monospace`;bx.fillText(p.c,p.x+Math.sin(p.r)*22,p.y)}bx.shadowBlur=0;
   bx.globalAlpha=1;requestAnimationFrame(bgLoop)}
 
 /* ---------- confetti / hearts fx ---------- */
 let bits=[];
-function burst(x,y,n=90){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=3+Math.random()*9;bits.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-6,life:1,s:12+Math.random()*16,c:['💖','💗','✨','💞','🌸','∞','π'][Math.random()*7|0],r:Math.random()*6})}}
-function fxLoop(){fxx.clearRect(0,0,W,H);bits=bits.filter(b=>b.life>0);for(const b of bits){b.vy+=.22;b.vx*=.99;b.x+=b.vx;b.y+=b.vy;b.life-=.008;b.r+=.05;fxx.save();fxx.globalAlpha=Math.max(0,b.life);fxx.translate(b.x,b.y);fxx.rotate(Math.sin(b.r)*.4);fxx.font=`${b.s}px serif`;fxx.fillStyle='#ffd27a';fxx.fillText(b.c,0,0);fxx.restore()}requestAnimationFrame(fxLoop)}
-addEventListener('click',e=>{if(started&&!e.target.closest('button,a,.bar,.switch'))burst(e.clientX,e.clientY,12)});
+function burst(x,y,n=90){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=8+Math.random()*16;bits.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-9,life:1,s:18+Math.random()*22,c:['💖','💗','✨','💞','🌸','∞','π'][Math.random()*7|0],r:Math.random()*6})}}
+function fxLoop(){fxx.clearRect(0,0,W,H);bits=bits.filter(b=>b.life>0);for(const b of bits){b.vy+=.55;b.vx*=.97;b.x+=b.vx;b.y+=b.vy;b.life-=.022;b.r+=.15;fxx.save();fxx.globalAlpha=Math.max(0,b.life);fxx.translate(b.x,b.y);fxx.rotate(Math.sin(b.r)*.4);fxx.font=`${b.s}px serif`;fxx.fillStyle='#ffd27a';fxx.fillText(b.c,0,0);fxx.restore()}requestAnimationFrame(fxLoop)}
+addEventListener('click',e=>{if(started&&!e.target.closest('button,a,.bar,.switch'))burst(e.clientX,e.clientY,18)});
 
 /* ---------- gate terminal ---------- */
 let started=false,termRun=0;
@@ -477,7 +526,7 @@ function drawHeart(){const S=hc.clientWidth;hc.width=S*DPR;hc.height=S*DPR;hx.se
   // axes
   hx.strokeStyle='rgba(255,255,255,.1)';hx.lineWidth=1;hx.beginPath();hx.moveTo(0,cy);hx.lineTo(S,cy);hx.moveTo(cx,0);hx.lineTo(cx,S);hx.stroke();
   let t=0;const pts=[];for(let i=0;i<=600;i++){const a=i/600*Math.PI*2;pts.push([cx+16*Math.pow(Math.sin(a),3)*sc,cy-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*sc])}
-  let i=1;(function draw(){for(let k=0;k<6&&i<pts.length;k++,i++){hx.strokeStyle=`hsl(${340-i/600*80},100%,70%)`;hx.lineWidth=3;hx.shadowColor='#ff5c8a';hx.shadowBlur=12;hx.beginPath();hx.moveTo(...pts[i-1]);hx.lineTo(...pts[i]);hx.stroke()}
+  let i=1;(function draw(){for(let k=0;k<22&&i<pts.length;k++,i++){hx.strokeStyle=`hsl(${340-i/600*80},100%,70%)`;hx.lineWidth=3;hx.shadowColor='#ff5c8a';hx.shadowBlur=12;hx.beginPath();hx.moveTo(...pts[i-1]);hx.lineTo(...pts[i]);hx.stroke()}
     if(i<pts.length)requestAnimationFrame(draw);else{hx.shadowBlur=0;hx.fillStyle='rgba(255,92,138,.14)';hx.beginPath();pts.forEach((p,j)=>j?hx.lineTo(...p):hx.moveTo(...p));hx.fill();hx.fillStyle='#fff';hx.font=`600 ${S*.07}px Fraunces, serif`;hx.textAlign='center';hx.fillText('L + A',cx,cy+S*.02)}})()}
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&!heartDrawn){heartDrawn=true;drawHeart()}},{threshold:.4}).observe(hc);
 new IntersectionObserver(es=>{if(es[0].isIntersecting)$('#pola').classList.add('tilt')},{threshold:.6}).observe($('#pola'));
@@ -487,7 +536,7 @@ const au=$('#audio'),wv=$('#wave'),wx=wv.getContext('2d');let actx,analyser,data
 const fmt=s=>isFinite(s)?`${s/60|0}:${String(Math.floor(s%60)).padStart(2,'0')}`:'0:00';
 function setupAnalyser(){if(actx)return;try{actx=new (window.AudioContext||window.webkitAudioContext)();srcNode=actx.createMediaElementSource(au);analyser=actx.createAnalyser();analyser.fftSize=128;srcNode.connect(analyser);analyser.connect(actx.destination);dataArr=new Uint8Array(analyser.frequencyBinCount)}catch(e){analyser=null}}
 $('#playBtn').onclick=()=>{setupAnalyser();if(actx&&actx.state==='suspended')actx.resume();if(au.paused){au.play();}else au.pause()};
-au.onplay=()=>{$('#playBtn').textContent='❚❚';$('#vinyl').classList.add('play');$('#mute').style.display='none'};
+au.onplay=()=>{if(typeof sg!=='undefined'&&!sg.paused)sg.pause();$('#playBtn').textContent='❚❚';$('#vinyl').classList.add('play')};
 au.onpause=()=>{$('#playBtn').textContent='▶';$('#vinyl').classList.remove('play')};
 au.onended=()=>{burst(innerWidth/2,innerHeight/2,60)};
 au.ontimeupdate=()=>{$('#prog').style.width=(au.currentTime/au.duration*100||0)+'%';$('#time').textContent=`${fmt(au.currentTime)} / ${fmt(au.duration||101)}`};
@@ -498,6 +547,21 @@ function waveLoop(t){const w=wv.clientWidth,h=wv.clientHeight;if(wv.width!==w*DP
     const bh=Math.max(4,v*h);const g=wx.createLinearGradient(0,h/2-bh/2,0,h/2+bh/2);g.addColorStop(0,'#ffb3c7');g.addColorStop(1,'#9b7bff');wx.fillStyle=g;
     const x=i*bw+bw*.2;wx.beginPath();wx.roundRect?wx.roundRect(x,h/2-bh/2,bw*.6,bh,3):wx.rect(x,h/2-bh/2,bw*.6,bh);wx.fill()}
   requestAnimationFrame(waveLoop)}
+
+
+/* ---------- song preview (30 s) ---------- */
+const sg=$('#song'),CLIP=30;let songFade;
+$('#songBtn').onclick=()=>{if(!sg.paused){sg.pause();return}if(sg.currentTime>=CLIP-.05)sg.currentTime=0;if(!au.paused)au.pause();sg.volume=1;sg.play().catch(()=>{})};
+sg.onplay=()=>{$('#songBtn').textContent='❚❚';$('#songBox').classList.add('play');if(!au.paused)au.pause()};
+sg.onpause=()=>{$('#songBtn').textContent='▶';$('#songBox').classList.remove('play')};
+sg.ontimeupdate=()=>{const t=Math.min(sg.currentTime,CLIP);$('#songProg').style.width=(t/CLIP*100)+'%';$('#songTime').textContent=`${fmt(t)} / 0:30`;
+  if(t>CLIP-3)sg.volume=Math.max(0,(CLIP-t)/3);
+  if(sg.currentTime>=CLIP){sg.pause();sg.volume=1;$('#tease').classList.add('show');const r=$('#songBox').getBoundingClientRect();burst(r.left+r.width/2,r.top+60,40)}};
+sg.onended=()=>{$('#tease').classList.add('show')};
+$('#songBar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();sg.currentTime=Math.max(0,Math.min(CLIP-.5,(e.clientX-r.left)/r.width*CLIP))};
+function songMissing(){if($('#songSoon'))return;$('#songBox .controls').style.display='none';const p=document.createElement('p');p.id='songSoon';p.className='songSub';p.dataset.i18n='songSoon';p.textContent=T[L].songSoon;$('#songBox .controls').after(p)}
+sg.addEventListener('error',songMissing);if(sg.error)songMissing();
+fetch(sg.src,{method:'HEAD'}).then(r=>{if(!r.ok)songMissing()}).catch(()=>{});
 
 /* ---------- letter typing ---------- */
 let letterStarted=false;
@@ -528,7 +592,7 @@ $('#no').addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')dodge()}
 $('#no').addEventListener('click',dodge);
 
 /* ---------- YES ---------- */
-$('#yes').onclick=()=>{$('#celebrate').classList.add('show');let k=0;const iv=setInterval(()=>{burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,70);if(++k>7)clearInterval(iv)},350);
+$('#yes').onclick=()=>{$('#celebrate').classList.add('show');let k=0;const iv=setInterval(()=>{burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,70);if(++k>12)clearInterval(iv)},160);
   if(navigator.vibrate)navigator.vibrate([80,60,80,60,200])};
 $('#celebrate').onclick=e=>{if(e.target.id==='celebrate')$('#celebrate').classList.remove('show')};
 
