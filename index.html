@@ -159,16 +159,22 @@ p.lead{font-size:1.08rem;line-height:1.65;color:var(--muted)}
 
 
 /* song */
-.song{background:linear-gradient(160deg,rgba(255,210,122,.12),rgba(255,92,138,.14));border:1px solid var(--line);border-radius:26px;padding:26px 20px;margin-top:10px;position:relative;overflow:hidden}
-.notes{height:90px;position:relative;margin-bottom:8px}
-.notes span{position:absolute;bottom:0;font-size:1.6rem;opacity:0}
-.song.play .notes span{animation:note 1.6s linear infinite}
-@keyframes note{0%{opacity:0;transform:translateY(0) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-90px) rotate(25deg)}}
-.songTitle{font-family:Fraunces,serif;font-style:italic;font-size:1.5rem;margin-bottom:4px}
-.songSub{color:var(--muted);font-size:.85rem;margin-bottom:16px}
-.tease{display:none;margin-top:20px;animation:fade .6s}
-.tease.show{display:block}
-.tease p{color:var(--rose);font-family:Caveat,cursive;font-size:1.7rem;margin-bottom:14px}
+#songSec{overflow:hidden}
+#songSec .stageGlow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 55%,rgba(255,92,138,var(--e,0)),transparent 60%);transition:background .08s}
+.stage{position:relative;width:min(88vw,400px);aspect-ratio:1;margin:6px auto 0}
+#viz{position:absolute;inset:0;width:100%;height:100%}
+.disc{position:absolute;left:50%;top:50%;width:44%;aspect-ratio:1;transform:translate(-50%,-50%) scale(var(--b,1));border-radius:50%;background:url(assets/elle.jpg) center 28%/cover;border:4px solid #fff;box-shadow:0 0 calc(20px + var(--g,0px)) rgba(255,92,138,.9);cursor:pointer;transition:transform .07s}
+.disc:after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;font-size:2.4rem;color:#fff;background:rgba(11,7,22,.45);border-radius:50%;transition:opacity .4s}
+.stage.play .disc:after{opacity:0}
+.trackTitle{font-family:Fraunces,serif;font-style:italic;font-size:clamp(2rem,9vw,3rem);line-height:1;margin-top:8px}
+.trackBy{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;margin:8px 0 18px}
+.dedic{font-family:Caveat,cursive;font-size:1.6rem;color:var(--rose);min-height:2.2em;margin-top:14px;transition:opacity .6s}
+.songCtl{background:rgba(20,12,36,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;padding:14px 16px}
+.songCtl .bar{height:8px}
+.songCtl .bar b{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);left:0;box-shadow:0 0 12px var(--pink)}
+.songEnd{display:none;margin-top:20px}
+.songEnd.show{display:block;animation:fade .8s}
+.songEnd p{font-family:Caveat,cursive;font-size:1.8rem;color:var(--gold);margin-bottom:14px}
 /* final */
 .final h2{font-size:clamp(2.1rem,9vw,3.6rem)}
 .final .big{font-family:Fraunces,serif;font-style:italic;font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:1.3;margin:10px 0 30px}
@@ -331,25 +337,30 @@ footer{position:relative;z-index:1;text-align:center;padding:40px 20px 60px;colo
 
 <!-- SONG -->
 <section id="songSec">
+  <div class="stageGlow" id="stageGlow"></div>
   <div class="wrap">
     <div class="kicker reveal">§6</div>
     <h2 class="reveal" data-i18n="songTitle">I wrote you a song</h2>
-    <p class="lead reveal" data-i18n="songLead">You know I sing. This one exists because of you. Here's a little preview…</p>
-    <div class="song reveal d2" id="songBox">
-      <div class="notes"><span style="left:12%">♪</span><span style="left:32%;animation-delay:.4s">♫</span><span style="left:55%;animation-delay:.8s">♪</span><span style="left:78%;animation-delay:1.2s">♬</span></div>
-      <div class="songTitle">“For Anaïs”</div>
-      <div class="songSub" data-i18n="songSub">by Lewis · 30-second preview</div>
+    <p class="lead reveal" data-i18n="songLead">You know I sing. This one exists because of you. Tap your photo and let it play, the whole thing.</p>
+    <div class="stage reveal d1" id="stage">
+      <canvas id="viz"></canvas>
+      <div class="disc" id="disc" role="button" aria-label="play"></div>
+    </div>
+    <div class="trackTitle grad reveal">Don’t Give Up</div>
+    <div class="trackBy reveal" data-i18n="songBy">written &amp; sung by Lewis · for Anaïs</div>
+    <div class="songCtl reveal d2">
       <div class="controls">
         <button class="play-btn" id="songBtn" aria-label="play">▶</button>
-        <div class="bar" id="songBar"><i id="songProg"></i></div>
-        <div class="time" id="songTime">0:00 / 0:30</div>
-      </div>
-      <div class="tease" id="tease">
-        <p data-i18n="tease">Want to hear the whole song? You'll have to ask me 😏</p>
-        <a class="btn wa" id="songWa" target="_blank" rel="noopener"><span>🎶</span><span data-i18n="songAsk">Ask Lewis for the full song</span></a>
+        <div class="bar" id="songBar"><i id="songProg"></i><b id="songKnob"></b></div>
+        <div class="time" id="songTime">0:00 / 3:08</div>
       </div>
     </div>
-    <audio id="song" src="assets/chanson.m4a" preload="metadata" playsinline></audio>
+    <div class="dedic" id="dedic"></div>
+    <div class="songEnd" id="songEnd">
+      <p data-i18n="songEnd">This song is yours now. Forever. 🎶</p>
+      <a class="btn wa" id="songWa" target="_blank" rel="noopener"><span>💬</span><span data-i18n="songAsk">Tell Lewis what you felt</span></a>
+    </div>
+    <audio id="song" src="assets/dont-give-up.mp3" preload="metadata" playsinline></audio>
   </div>
 </section>
 
@@ -421,7 +432,7 @@ en:{
  confTitle:"My confession", confLead:"Some things don't fit in text. So I recorded them. Put your headphones on, and press play.",
  letterTitle:"What I really want you to know",
  letter:"I know you're the one, Anaïs. Despite everything you might think.\n\nYou already know I'll never be a source of stress for you. I know a relationship is a responsibility. But you don't have to move at the pace the world imposes on you. Go at your own pace.\n\nJust stay exactly who you are right now, without changing. Because that's how I love you.\n\nThere are so many things we haven't talked about yet… and I want to discover all of them with you.",
- songTitle:"I wrote you a song", songLead:"You know I sing. This one exists because of you. Here's a little preview…", songSub:"by Lewis · 30-second preview", tease:"Want to hear the whole song? You'll have to ask me 😏", songAsk:"Ask Lewis for the full song", songMsg:"Lewis 🎶 I want to hear the whole song you wrote for me!", songSoon:"The song is coming very soon… 🎶",
+ songTitle:"I wrote you a song", songLead:"You know I sing. This one exists because of you. Tap your photo and let it play, the whole thing.", songBy:"written & sung by Lewis · for Anaïs", songEnd:"This song is yours now. Forever. 🎶", songAsk:"Tell Lewis what you felt", songMsg:"Lewis 🎶 I just listened to \"Don't Give Up\"… ", dedic:["Put your headphones on 🎧","This one is for you, Anaïs","Every word, I meant it","Don't give up… on us 💗","Close your eyes for a second","Still here? Me too. Always."],
  hugTitle:"Our little joke 😏", hugLead:"You know what happens when I say \"I'm coming to see you\"…", hugBtn:"\"I'm coming to see you\" mode", hugOn:"Step 1: a big hug 🤗 … Step 2: the kiss 😘", hugOff:"",
  quizTitle:"A little exam, Miss Mathematician",
  quiz:[
@@ -448,7 +459,7 @@ fr:{
  confTitle:"Ma confession", confLead:"Certaines choses ne tiennent pas dans un texte. Alors je les ai enregistrées. Mets tes écouteurs, et appuie sur play.",
  letterTitle:"Ce que je veux vraiment que tu saches",
  letter:"Je sais que c'est toi la bonne, Anaïs. Malgré tout ce que tu peux penser.\n\nTu sais déjà que je ne serai jamais une source de stress pour toi. Je sais bien qu'une relation, c'est une responsabilité. Mais tu n'as pas besoin d'aller au rythme que le monde t'impose. Va à ton rythme.\n\nReste juste toi, telle que tu es maintenant, sans changer. Parce que c'est comme ça que je t'aime.\n\nIl y a plein de choses dont on n'a pas encore parlé… et j'ai envie de toutes les découvrir avec toi.",
- songTitle:"Je t'ai écrit une chanson", songLead:"Tu sais que je chante. Celle-ci existe grâce à toi. Voici un petit avant-goût…", songSub:"par Lewis · extrait de 30 secondes", tease:"Tu veux écouter la chanson en entier ? Il faudra me le demander 😏", songAsk:"Demander la chanson à Lewis", songMsg:"Lewis 🎶 je veux écouter la chanson que tu m'as écrite en entier !", songSoon:"La chanson arrive très bientôt… 🎶",
+ songTitle:"Je t'ai écrit une chanson", songLead:"Tu sais que je chante. Celle-ci existe grâce à toi. Touche ta photo et laisse-la jouer, en entier.", songBy:"écrite & chantée par Lewis · pour Anaïs", songEnd:"Cette chanson est à toi maintenant. Pour toujours. 🎶", songAsk:"Dire à Lewis ce que tu as ressenti", songMsg:"Lewis 🎶 je viens d'écouter « Don't Give Up »… ", dedic:["Mets tes écouteurs 🎧","Celle-ci, c'est pour toi, Anaïs","Chaque mot, je le pensais","Don't give up… sur nous 💗","Ferme les yeux une seconde","Toujours là ? Moi aussi. Toujours."],
  hugTitle:"Notre petite blague 😏", hugLead:"Tu sais ce qui se passe quand je dis « je viens te voir »…", hugBtn:"Mode « je viens te voir »", hugOn:"Étape 1 : un gros câlin 🤗 … Étape 2 : le bisou 😘", hugOff:"",
  quizTitle:"Petit examen, Mademoiselle la mathématicienne",
  quiz:[
@@ -473,6 +484,7 @@ function applyLang(){
   $('#waBtn').href=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(T[L].waMsg)}`;
   $('#songWa').href=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(T[L].songMsg)}`;
   if(hugOn) $('#hugText').textContent=T[L].hugOn;
+  if(typeof dedicI!=='undefined'&&dedicI>=0){$('#dedic').textContent=T[L].dedic[dedicI]}
   if(letterStarted) { $('#typed').textContent=T[L].letter; $('#typed').classList.add('done'); }
   renderQuiz();
 }
@@ -533,10 +545,12 @@ new IntersectionObserver(es=>{if(es[0].isIntersecting)$('#pola').classList.add('
 
 /* ---------- audio confession ---------- */
 const au=$('#audio'),wv=$('#wave'),wx=wv.getContext('2d');let actx,analyser,dataArr,srcNode;
+function getCtx(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(actx&&actx.state==='suspended')actx.resume();return actx}
+function tap(el,fft){const c=getCtx();if(!c)return null;try{const src=c.createMediaElementSource(el),an=c.createAnalyser();an.fftSize=fft;an.smoothingTimeConstant=.75;src.connect(an);an.connect(c.destination);return an}catch(e){return null}}
 const fmt=s=>isFinite(s)?`${s/60|0}:${String(Math.floor(s%60)).padStart(2,'0')}`:'0:00';
-function setupAnalyser(){if(actx)return;try{actx=new (window.AudioContext||window.webkitAudioContext)();srcNode=actx.createMediaElementSource(au);analyser=actx.createAnalyser();analyser.fftSize=128;srcNode.connect(analyser);analyser.connect(actx.destination);dataArr=new Uint8Array(analyser.frequencyBinCount)}catch(e){analyser=null}}
-$('#playBtn').onclick=()=>{setupAnalyser();if(actx&&actx.state==='suspended')actx.resume();if(au.paused){au.play();}else au.pause()};
-au.onplay=()=>{if(typeof sg!=='undefined'&&!sg.paused)sg.pause();$('#playBtn').textContent='❚❚';$('#vinyl').classList.add('play')};
+let auTapped=false;function setupAnalyser(){getCtx();if(auTapped)return;auTapped=true;analyser=tap(au,128);if(analyser)dataArr=new Uint8Array(analyser.frequencyBinCount)}
+$('#playBtn').onclick=()=>{setupAnalyser();if(au.paused){au.play().catch(()=>{})}else au.pause()};
+au.onplay=()=>{if(!sg.paused)sg.pause();$('#playBtn').textContent='❚❚';$('#vinyl').classList.add('play')};
 au.onpause=()=>{$('#playBtn').textContent='▶';$('#vinyl').classList.remove('play')};
 au.onended=()=>{burst(innerWidth/2,innerHeight/2,60)};
 au.ontimeupdate=()=>{$('#prog').style.width=(au.currentTime/au.duration*100||0)+'%';$('#time').textContent=`${fmt(au.currentTime)} / ${fmt(au.duration||101)}`};
@@ -549,19 +563,35 @@ function waveLoop(t){const w=wv.clientWidth,h=wv.clientHeight;if(wv.width!==w*DP
   requestAnimationFrame(waveLoop)}
 
 
-/* ---------- song preview (30 s) ---------- */
-const sg=$('#song'),CLIP=30;let songFade;
-$('#songBtn').onclick=()=>{if(!sg.paused){sg.pause();return}if(sg.currentTime>=CLIP-.05)sg.currentTime=0;if(!au.paused)au.pause();sg.volume=1;sg.play().catch(()=>{})};
-sg.onplay=()=>{$('#songBtn').textContent='❚❚';$('#songBox').classList.add('play');if(!au.paused)au.pause()};
-sg.onpause=()=>{$('#songBtn').textContent='▶';$('#songBox').classList.remove('play')};
-sg.ontimeupdate=()=>{const t=Math.min(sg.currentTime,CLIP);$('#songProg').style.width=(t/CLIP*100)+'%';$('#songTime').textContent=`${fmt(t)} / 0:30`;
-  if(t>CLIP-3)sg.volume=Math.max(0,(CLIP-t)/3);
-  if(sg.currentTime>=CLIP){sg.pause();sg.volume=1;$('#tease').classList.add('show');const r=$('#songBox').getBoundingClientRect();burst(r.left+r.width/2,r.top+60,40)}};
-sg.onended=()=>{$('#tease').classList.add('show')};
-$('#songBar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();sg.currentTime=Math.max(0,Math.min(CLIP-.5,(e.clientX-r.left)/r.width*CLIP))};
-function songMissing(){if($('#songSoon'))return;$('#songBox .controls').style.display='none';const p=document.createElement('p');p.id='songSoon';p.className='songSub';p.dataset.i18n='songSoon';p.textContent=T[L].songSoon;$('#songBox .controls').after(p)}
-sg.addEventListener('error',songMissing);if(sg.error)songMissing();
-fetch(sg.src,{method:'HEAD'}).then(r=>{if(!r.ok)songMissing()}).catch(()=>{});
+/* ---------- song: full track + audio-reactive visualizer ---------- */
+const sg=$('#song'),vz=$('#viz'),vx=vz.getContext('2d');let sAn=null,sData,sTapped=false,lastBeat=0,energyAvg=0,dedicI=-1;
+function toggleSong(){if(!sTapped){sTapped=true;sAn=tap(sg,256);if(sAn)sData=new Uint8Array(sAn.frequencyBinCount)}else getCtx();if(sg.paused){if(!au.paused)au.pause();sg.play().catch(()=>{})}else sg.pause()}
+$('#songBtn').onclick=toggleSong;$('#disc').onclick=toggleSong;
+sg.onplay=()=>{$('#songBtn').textContent='❚❚';$('#stage').classList.add('play');if(!au.paused)au.pause()};
+sg.onpause=()=>{$('#songBtn').textContent='▶';$('#stage').classList.remove('play')};
+sg.onended=()=>{$('#songEnd').classList.add('show');for(let k=0;k<6;k++)setTimeout(()=>burst(Math.random()*innerWidth,innerHeight*.4,60),k*200)};
+sg.ontimeupdate=()=>{const d=sg.duration||188.8,t=sg.currentTime,p=t/d*100;$('#songProg').style.width=p+'%';$('#songKnob').style.left=p+'%';$('#songTime').textContent=`${fmt(t)} / ${fmt(d)}`;
+  const di=Math.min(T[L].dedic.length-1,Math.floor(t/d*T[L].dedic.length));if(di!==dedicI){dedicI=di;const el=$('#dedic');el.style.opacity=0;setTimeout(()=>{el.textContent=T[L].dedic[di];el.style.opacity=1},300)}};
+$('#songBar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();if(sg.duration)sg.currentTime=(e.clientX-r.left)/r.width*sg.duration};
+const vizNotes=[];
+function vizLoop(t){const S=vz.clientWidth;if(vz.width!==Math.round(S*DPR)){vz.width=vz.height=Math.round(S*DPR);vx.setTransform(DPR,0,0,DPR,0,0)}
+  vx.clearRect(0,0,S,S);const c=S/2,R=S*.25,N=72,playing=!sg.paused;let bass=0;
+  if(sAn&&playing){sAn.getByteFrequencyData(sData);for(let i=0;i<8;i++)bass+=sData[i];bass/=8*255}else if(playing){bass=.45+.35*Math.abs(Math.sin(t/260))}
+  energyAvg=energyAvg*.94+bass*.06;
+  if(playing&&bass>energyAvg*1.18&&bass>.35&&t-lastBeat>260){lastBeat=t;for(let k=0;k<3;k++)vizNotes.push({a:Math.random()*Math.PI*2,r:R*1.1,v:2+Math.random()*3,s:14+Math.random()*12,c:['♪','♫','♥','♬'][Math.random()*4|0],l:1})}
+  // radial bars
+  for(let i=0;i<N;i++){const ang=i/N*Math.PI*2-Math.PI/2;let v;
+    if(sAn&&playing){const f=(i<N/2?i:N-i)/(N/2),idx=Math.floor(Math.pow(f,1.6)*sData.length*.45);v=Math.min(1,sData[idx]/255*(1+f*.9));v=Math.max(v,bass*.55)}else v=playing?.3+.4*Math.abs(Math.sin(t/200+i*.6)):.08+.05*Math.sin(t/700+i*.4);
+    const L1=R*1.08,L2=L1+v*R*.95;vx.strokeStyle=`hsl(${330+v*60-(i%2)*20},100%,${62+v*15}%)`;vx.lineWidth=Math.max(2,S/N*.55);vx.lineCap='round';
+    vx.beginPath();vx.moveTo(c+Math.cos(ang)*L1,c+Math.sin(ang)*L1);vx.lineTo(c+Math.cos(ang)*L2,c+Math.sin(ang)*L2);vx.stroke()}
+  // pulsing heart outline
+  const hs=R*.072*(1+bass*.45);vx.save();vx.translate(c,c);vx.rotate(Math.sin(t/2000)*.05);vx.strokeStyle=`rgba(255,179,199,${.25+bass*.6})`;vx.lineWidth=2;vx.beginPath();
+  for(let i=0;i<=120;i++){const a=i/120*Math.PI*2,x=16*Math.pow(Math.sin(a),3)*hs,y=-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*hs;i?vx.lineTo(x,y+hs):vx.moveTo(x,y+hs)}vx.stroke();vx.restore();
+  // notes flying out on beats
+  for(let i=vizNotes.length-1;i>=0;i--){const n=vizNotes[i];n.r+=n.v*2;n.l-=.018;if(n.l<=0){vizNotes.splice(i,1);continue}vx.globalAlpha=n.l;vx.fillStyle='#ffd27a';vx.font=`${n.s}px serif`;vx.fillText(n.c,c+Math.cos(n.a)*n.r-6,c+Math.sin(n.a)*n.r+6)}vx.globalAlpha=1;
+  $('#disc').style.setProperty('--b',1+bass*.09);$('#disc').style.setProperty('--g',(bass*60)+'px');$('#stageGlow').style.setProperty('--e',(playing?bass*.35:0).toFixed(3));
+  requestAnimationFrame(vizLoop)}
+requestAnimationFrame(vizLoop);
 
 /* ---------- letter typing ---------- */
 let letterStarted=false;
